@@ -1,0 +1,8 @@
+# Ne pas committer les fichiers sensibles
+coding/config/
+.env
+
+# Dossiers temporaires WAMP/XAMPP
+vendor/
+*.log
+*.sql
