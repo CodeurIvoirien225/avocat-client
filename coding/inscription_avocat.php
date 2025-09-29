@@ -3,15 +3,35 @@ require __DIR__ . '/config/config.php';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Récupérer les données du formulaire
-$username = trim($_POST['username'] ?? '');
-$email = trim($_POST['email'] ?? '');
-$password = password_hash($_POST['password'] ?? '', PASSWORD_DEFAULT);
-$prenom = trim($_POST['prenom'] ?? '');
-$nom = trim($_POST['nom'] ?? '');
-$ville = trim($_POST['ville'] ?? '');
-$specialite = trim($_POST['specialite'] ?? '');
-$annee_experience = intval($_POST['annee_experience'] ?? 0);
-$adresse_cabinet = trim($_POST['adresse_cabinet'] ?? '');
+    $username = trim($_POST['username'] ?? '');
+    $email = trim($_POST['email'] ?? '');
+    $password = password_hash($_POST['password'] ?? '', PASSWORD_DEFAULT);
+    $prenom = trim($_POST['prenom'] ?? '');
+    $nom = trim($_POST['nom'] ?? '');
+    $ville = trim($_POST['ville'] ?? '');
+    $specialite = trim($_POST['specialite'] ?? '');
+    $annee_experience = intval($_POST['annee_experience'] ?? 0);
+    $adresse_cabinet = trim($_POST['adresse_cabinet'] ?? '');
+    $langues = trim($_POST['langues'] ?? '');
+    $linkedin = trim($_POST['linkedin'] ?? '');
+
+    // Gestion de la photo de profil
+    $profile_photo = '';
+    if (isset($_FILES['profile_photo']) && $_FILES['profile_photo']['error'] == UPLOAD_ERR_OK) {
+        $uploadDir = 'uploads/';
+        if (!is_dir($uploadDir)) {
+            mkdir($uploadDir, 0777, true);
+        }
+        $fileName = uniqid() . '_' . basename($_FILES['profile_photo']['name']);
+        $uploadFile = $uploadDir . $fileName;
+        if (move_uploaded_file($_FILES['profile_photo']['tmp_name'], $uploadFile)) {
+            $profile_photo = $uploadFile;
+        } else {
+            $error = "Erreur lors de l'upload de la photo de profil.";
+        }
+    } else {
+        $error = "La photo de profil est obligatoire.";
+    }
 
 
     // Vérifier si l'utilisateur existe déjà
@@ -19,15 +39,17 @@ $adresse_cabinet = trim($_POST['adresse_cabinet'] ?? '');
     $stmt->execute([$username, $email]);
     if ($stmt->rowCount() > 0) {
         $error = "Nom d'utilisateur ou email déjà utilisé.";
+    } elseif (empty($profile_photo)) {
+        // Erreur déjà gérée plus haut
     } else {
-        // Insérer l'avocat
-        $stmt = $pdo->prepare("INSERT INTO avocat (username, email, password, prenom, nom, ville, specialite, annee_experience, adresse_cabinet) 
-                               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
-        $stmt->execute([$username, $email, $password, $prenom, $nom, $ville, $specialite, $annee_experience, $adresse_cabinet]);
-    $success = "Inscription réussie !";
-    // Afficher le message puis rediriger après 3 secondes
-    echo '<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><meta http-equiv="refresh" content="3;url=connexion_avocat.php"><title>Inscription réussie</title><link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"></head><body><div class="container py-5"><div class="alert alert-success text-center" role="alert">'. $success .'<br>Vous allez être redirigé...</div></div></body></html>';
-    exit;
+    // Insérer l'avocat avec la photo de profil, la langue et le lien LinkedIn
+    $stmt = $pdo->prepare("INSERT INTO avocat (username, email, password, profile_photo, prenom, nom, ville, specialite, annee_experience, adresse_cabinet, langues, linkedin) 
+                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    $stmt->execute([$username, $email, $password, $profile_photo, $prenom, $nom, $ville, $specialite, $annee_experience, $adresse_cabinet, $langues, $linkedin]);
+        $success = "Inscription réussie !";
+        // Afficher le message puis rediriger après 3 secondes
+        echo '<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><meta http-equiv="refresh" content="3;url=connexion_avocat.php"><title>Inscription réussie</title><link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"></head><body><div class="container py-5"><div class="alert alert-success text-center" role="alert">'. $success .'<br>Vous allez être redirigé...</div></div></body></html>';
+        exit;
     }
 }
 ?>
@@ -216,7 +238,7 @@ $adresse_cabinet = trim($_POST['adresse_cabinet'] ?? '');
                                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                             </div>
                         <?php endif; ?>
-                        <form method="POST" class="row g-3">
+                        <form method="POST" enctype="multipart/form-data" class="row g-3">
                             <div class="col-md-6">
                                 <label for="prenom" class="form-label">Prénom <span class="text-danger">*</span></label>
                                 <div class="input-group">
@@ -290,12 +312,34 @@ $adresse_cabinet = trim($_POST['adresse_cabinet'] ?? '');
                             </div>
                             
                             <div class="col-12">
+                            <div class="col-12">
+                                <label for="profile_photo" class="form-label">Photo de profil <span class="text-danger">*</span></label>
+                                <input type="file" class="form-control" id="profile_photo" name="profile_photo" accept="image/*" required>
+                            </div>
                                 <label for="adresse_cabinet" class="form-label">Adresse du cabinet</label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="fas fa-map-marker-alt"></i></span>
                                     <input type="text" class="form-control" id="adresse_cabinet" name="adresse_cabinet" placeholder="Adresse complète de votre cabinet">
                                 </div>
                             </div>
+
+<div class="col-md-6">
+    <label for="langues" class="form-label">Langues parlées</label>
+    <div class="input-group">
+        <span class="input-group-text"><i class="fas fa-language"></i></span>
+            <input type="text" name="langues" id="langues" class="form-control" placeholder="Ex: Français, Anglais" required>
+            <?php echo isset($row['langues']) ? htmlspecialchars($row['langues']) : ''; ?>
+    </div>
+</div>
+
+<div class="col-md-6">
+    <label for="linkedin" class="form-label">Lien LinkedIn (facultatif)</label>
+    <div class="input-group">
+        <span class="input-group-text"><i class="fab fa-linkedin-in"></i></span>
+        <input type="url" name="linkedin" id="linkedin" class="form-control" placeholder="https://www.linkedin.com/in/votre-profil">
+    </div>
+</div>
+
                             
                             <div class="col-12 mt-4">
                                 <button type="submit" class="btn btn-primary btn-lg w-100">

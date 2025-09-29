@@ -2,6 +2,14 @@
 require __DIR__ . '/config/config.php';
 session_start();
 
+// Gestion de la déconnexion
+if (isset($_GET['logout'])) {
+    session_destroy();
+    header('Location: index.php');
+    exit();
+}
+
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $username_email = trim($_POST['username_email'] ?? '');
     $password = $_POST['password'] ?? '';
@@ -15,8 +23,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         // Utilisateur trouvé dans avocat
         if (password_verify($password, $user['password'])) {
             $_SESSION['user_id'] = $user['id'];
+            $_SESSION['id'] = $user['id']; // Pour le lien Mon profil
             $_SESSION['role'] = 'avocat';
-            header("Location: dashboard.php");
+            header("Location: dashboard_avocat.php");
             exit;
         } else {
             $error = "Mot de passe incorrect.";
@@ -212,9 +221,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                 </button>
                             </div>
                             
-                            <div class="col-12 text-center">
-                                <a href="#" class="login-link">Mot de passe oublié ?</a>
-                            </div>
+<div class="col-12 text-center">
+    <a href="mot_de_passe_oublie_avocat.php" class="login-link">Mot de passe oublié ?</a>
+</div>
+
                         </form>
                         
                         <div class="text-center mt-4">

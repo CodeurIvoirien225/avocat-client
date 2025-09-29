@@ -1,7 +1,7 @@
 # Ne pas committer les fichiers sensibles
 coding/config/
 .env
-
+mot_de_passe_application.php
 # Dossiers temporaires WAMP/XAMPP
 vendor/
 *.log

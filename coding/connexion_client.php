@@ -4,6 +4,14 @@
 require __DIR__ . '/config/config.php';
 session_start();
 
+// Gestion de la déconnexion
+if (isset($_GET['logout'])) {
+    session_destroy();
+    header('Location: index.php');
+    exit();
+}
+
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $username_email = trim($_POST['username_email'] ?? '');
     $password = $_POST['password'] ?? '';
@@ -17,8 +25,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         // Utilisateur trouvé dans client
         if (password_verify($password, $user['password'])) {
             $_SESSION['user_id'] = $user['id'];
+            $_SESSION['id'] = $user['id']; // Pour le profil client
             $_SESSION['role'] = 'client';
-            header("Location: dashboard.php");
+            header("Location: fil_actualite.php");
             exit;
         } else {
             $error = "Mot de passe incorrect.";
@@ -236,16 +245,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                 </div>
                             </div>
                             
-                            <div class="col-12 d-flex justify-content-between align-items-center">
-                                
-                                <a href="#" class="login-link">Mot de passe oublié ?</a>
-                            </div>
+
                             
                             <div class="col-12 mt-4">
                                 <button type="submit" class="btn btn-primary btn-lg w-100">
                                     <i class="fas fa-sign-in-alt me-2"></i> Se connecter
                                 </button>
                             </div>
+
+                            <div class="col-12 text-center">
+    <a href="mot_de_passe_oublie_client.php" class="login-link">Mot de passe oublié ?</a>
+</div>
+
                         </form>
                         
                        

@@ -44,6 +44,7 @@
     </style>
 </head>
 <body>
+    
     <h1>Bienvenue sur la plateforme Avocat-Client</h1>
 
     <div class="container">
