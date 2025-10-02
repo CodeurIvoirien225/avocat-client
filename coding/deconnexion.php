@@ -1,12 +1,18 @@
 <?php
 session_start();
 
-// Détruire toutes les données de session
+// Sauvegarder le rôle avant de détruire la session
+$role = isset($_SESSION['role']) ? $_SESSION['role'] : null;
+
+// Détruire la session
 session_unset();
 session_destroy();
 
-// Rediriger vers une page de connexion générique ou choisir selon le rôle
-// Ici, on peut créer une page d'accueil qui propose "connexion avocat / client"
-header("Location: index.php"); // ou "connexion_client.php" / "connexion_avocat.php"
+// Rediriger selon le rôle
+if ($role === 'avocat') {
+    header("Location: connexion_avocat.php");
+} else {
+    header("Location: connexion_client.php");
+}
 exit;
 ?>

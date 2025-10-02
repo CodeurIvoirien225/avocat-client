@@ -224,15 +224,10 @@ elseif (isset($_SESSION['role']) && $_SESSION['role'] === 'client') {
                             }
                             ?>
                         </span>
-                        <?php if ($_SESSION['role'] === 'avocat'): ?>
-                            <a href="connexion_avocat.php?logout=1" class="btn btn-outline-danger">
-                                <i class="fas fa-sign-out-alt me-1"></i> Déconnexion
-                            </a>
-                        <?php else: ?>
-                            <a href="connexion_client.php?logout=1" class="btn btn-outline-danger">
-                                <i class="fas fa-sign-out-alt me-1"></i> Déconnexion
-                            </a>
-                        <?php endif; ?>
+<a href="deconnexion.php" class="btn btn-outline-danger">
+    <i class="fas fa-sign-out-alt me-1"></i> Déconnexion
+</a>
+
                     </div>
 
                 <?php else: ?>
