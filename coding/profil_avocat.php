@@ -238,10 +238,16 @@ if (!$avocat) {
       <div class="card-body p-4">
         <div class="row align-items-center">
           <div class="col-md-3 text-center">
-            <img src="<?= htmlspecialchars($avocat['profile_photo'] ?? 'https://via.placeholder.com/200x200/1a237e/ffffff?text=' . urlencode($avocat['prenom'][0] . $avocat['nom'][0])) ?>" 
-                 class="profile-img rounded-circle mb-3" 
-                 alt="Photo de <?= htmlspecialchars($avocat['prenom'] . ' ' . $avocat['nom']) ?>">
-           <div class="social-links mb-3">
+
+
+          <img src="<?= htmlspecialchars($avocat['profile_photo'] ?? 'https://via.placeholder.com/200x200/1a237e/ffffff?text=' . urlencode($avocat['prenom'][0] . $avocat['nom'][0])) ?>" 
+     class="profile-img rounded-circle mb-3" 
+     alt="Photo de <?= htmlspecialchars($avocat['prenom'] . ' ' . $avocat['nom']) ?>"
+     id="profilePhoto"
+     style="cursor:pointer;"
+     data-bs-toggle="modal" data-bs-target="#photoModal">
+
+         <div class="social-links mb-3">
     <?php if (!empty($avocat['linkedin'])): ?>
         <a href="<?= htmlspecialchars($avocat['linkedin']) ?>" target="_blank" title="LinkedIn">
             <i class="fab fa-linkedin-in"></i>
@@ -357,5 +363,20 @@ if (!$avocat) {
 
   <!-- Bootstrap JS Bundle with Popper -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+
+  <!-- Modal pour afficher la photo en grand -->
+<div class="modal fade" id="photoModal" tabindex="-1" aria-labelledby="photoModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content bg-transparent border-0">
+      <div class="modal-body text-center p-0">
+        <img src="<?= htmlspecialchars($avocat['profile_photo'] ?? 'https://via.placeholder.com/400x400/1a237e/ffffff?text=' . urlencode($avocat['prenom'][0] . $avocat['nom'][0])) ?>" 
+             alt="Photo de <?= htmlspecialchars($avocat['prenom'] . ' ' . $avocat['nom']) ?>" 
+             class="img-fluid rounded shadow" style="max-width: 100%; max-height: 80vh;">
+      </div>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>

@@ -199,10 +199,15 @@ if (!$client) {
             <div class="card-body p-4">
                 <div class="row align-items-center">
                     <div class="col-md-3 text-center">
-                        <img src="<?= isset($client['profile_photo']) && !empty($client['profile_photo']) ? htmlspecialchars($client['profile_photo']) : 'https://via.placeholder.com/200x200/1a237e/ffffff?text=' . urlencode($client['prenom'][0] . $client['nom'][0]) ?>" 
-                             class="profile-img rounded-circle mb-3" 
-                             alt="Photo de <?= htmlspecialchars($client['prenom'] . ' ' . $client['nom']) ?>">
-                        <div class="social-links mb-3">
+
+                    <img src="<?= htmlspecialchars($client['profile_photo'] ?? 'https://via.placeholder.com/200x200/1a237e/ffffff?text=' . urlencode($client['prenom'][0] . $client['nom'][0])) ?>" 
+     class="profile-img rounded-circle mb-3"
+     alt="Photo de <?= htmlspecialchars($client['prenom'] . ' ' . $client['nom']) ?>"
+     id="profilePhoto"
+     style="cursor:pointer;"
+     data-bs-toggle="modal" data-bs-target="#photoModal">
+                    
+                    <div class="social-links mb-3">
                             <a href="mailto:<?= htmlspecialchars($client['email']) ?>" title="Email">
                                 <i class="fas fa-envelope"></i>
                             </a>
@@ -344,5 +349,20 @@ if (!$client) {
 
     <!-- Bootstrap JS Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+
+    <!-- Modal pour afficher la photo en grand -->
+<div class="modal fade" id="photoModal" tabindex="-1" aria-labelledby="photoModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content bg-transparent border-0">
+      <div class="modal-body text-center p-0">
+        <img src="<?= htmlspecialchars($client['profile_photo'] ?? 'https://via.placeholder.com/400x400/1a237e/ffffff?text=' . urlencode($client['prenom'][0] . $client['nom'][0])) ?>" 
+             alt="Photo de <?= htmlspecialchars($client['prenom'] . ' ' . $client['nom']) ?>" 
+             class="img-fluid rounded shadow" style="max-width: 100%; max-height: 80vh;">
+      </div>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>

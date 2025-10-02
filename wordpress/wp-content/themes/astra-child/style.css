@@ -1,0 +1,67 @@
+/* Header : image + overlay sombre pour lisibilité */
+.page-header {
+  position: relative;
+  background: url("https://cdn.pixabay.com/photo/2017/08/10/03/30/law-2611164_1280.jpg") center/cover no-repeat;
+  color: #fff;
+  padding: 6rem 1rem;
+  text-align: center;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+/* Superposition sombre (overlay) — améliore le contraste du texte */
+.page-header::before {
+  content: "";
+  position: absolute;
+  inset: 0; /* top:0; right:0; bottom:0; left:0; */
+  background: linear-gradient(rgba(0,0,0,0.60), rgba(0,0,0,0.40));
+  z-index: 0;
+}
+
+/* Forces le texte au-dessus de l'overlay */
+.page-header > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Titres et paragraphes lisibles */
+.page-header h1 {
+  font-size: 2.8rem;
+  margin: 0 0 0.6rem;
+  line-height: 1.05;
+  text-shadow: 0 6px 18px rgba(0,0,0,0.6);
+}
+
+.page-header p {
+  font-size: 1.15rem;
+  margin-bottom: 1.5rem;
+  text-shadow: 0 4px 12px rgba(0,0,0,0.5);
+}
+
+/* Bouton visible */
+.page-header .btn,
+.page-header a.btn {
+  display: inline-block;
+  background: #ff6f00;
+  color: #fff;
+  padding: 0.85rem 2rem;
+  border-radius: 30px;
+  text-decoration: none;
+  font-weight: 600;
+  box-shadow: 0 8px 22px rgba(255,111,0,0.18);
+  transition: transform .15s ease, box-shadow .15s ease;
+  border: none;
+}
+
+.page-header .btn:hover,
+.page-header a.btn:hover {
+  transform: translateY(-3px);
+  background: #e65100;
+}
+
+/* Responsive : réduire la taille sur petits écrans */
+@media (max-width: 768px) {
+  .page-header { padding: 4rem 1rem; }
+  .page-header h1 { font-size: 1.9rem; }
+  .page-header p { font-size: 1rem; }
+}

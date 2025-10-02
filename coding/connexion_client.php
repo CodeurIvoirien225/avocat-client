@@ -202,7 +202,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             </a>
             <div class="d-flex">
                 <a href="inscription_client.php" class="btn btn-outline-primary me-2">Inscription</a>
-                <a href="index.php" class="btn btn-primary">
+                <a href="http://localhost/avocat-client/wordpress/" class="btn btn-primary">
                     <i class="fas fa-home me-1"></i> Accueil
                 </a>
             </div>

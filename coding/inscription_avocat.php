@@ -202,12 +202,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <!-- Navigation Bar -->
     <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
         <div class="container">
-            <a class="navbar-brand" href="index.php">
+            <a class="navbar-brand" href="http://localhost/avocat-client/wordpress/">
                 <i class="fas fa-balance-scale-left me-2"></i>JustisConnect
             </a>
             <div class="d-flex">
                 <a href="connexion_avocat.php" class="btn btn-outline-primary me-2">Connexion</a>
-                <a href="index.php" class="btn btn-primary">
+                <a href="http://localhost/avocat-client/wordpress/" class="btn btn-primary">
                     <i class="fas fa-home me-1"></i> Accueil
                 </a>
             </div>

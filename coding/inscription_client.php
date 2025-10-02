@@ -8,22 +8,46 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $prenom = trim($_POST['prenom'] ?? '');
     $nom = trim($_POST['nom'] ?? '');
 
-    // Vérifier si l'utilisateur existe déjà
-    $stmt = $pdo->prepare("SELECT id FROM client WHERE username = ? OR email = ?");
-    $stmt->execute([$username, $email]);
-
-    if ($stmt->rowCount() > 0) {
-        $error = "Nom d'utilisateur ou email déjà utilisé.";
+    // Gestion de la photo de profil
+    $profile_photo = '';
+    if (isset($_FILES['profile_photo']) && $_FILES['profile_photo']['error'] == UPLOAD_ERR_OK) {
+        $ext = strtolower(pathinfo($_FILES['profile_photo']['name'], PATHINFO_EXTENSION));
+        $allowed = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+        if (in_array($ext, $allowed)) {
+            $uploadDir = __DIR__ . '/uploads/';
+            if (!is_dir($uploadDir)) mkdir($uploadDir, 0777, true);
+            $filename = uniqid() . '_' . time() . '.' . $ext;
+            $uploadFile = $uploadDir . $filename;
+            if (move_uploaded_file($_FILES['profile_photo']['tmp_name'], $uploadFile)) {
+                $profile_photo = 'uploads/' . $filename;
+            } else {
+                $error = "Erreur lors de l'upload de la photo.";
+            }
+        } else {
+            $error = "Format de photo non autorisé.";
+        }
     } else {
-        // Insérer le client
-        $stmt = $pdo->prepare("INSERT INTO client (username, email, password, prenom, nom) VALUES (?, ?, ?, ?, ?)");
-        $stmt->execute([$username, $email, $password, $prenom, $nom]);
-        $success = "Inscription réussie !";
-        // Afficher le message puis rediriger après 3 secondes
-        echo '<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><meta http-equiv="refresh" content="3;url=connexion_client.php"><title>Inscription réussie</title><link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"></head><body><div class="container py-5"><div class="alert alert-success text-center" role="alert">'. $success .'<br>Vous allez être redirigé pour vous connecter...</div></div></body></html>';
-        exit;
+        $error = "La photo de profil est obligatoire.";
+    }
+
+    // Vérifier si l'utilisateur existe déjà
+    if (empty($error)) {
+        $stmt = $pdo->prepare("SELECT id FROM client WHERE username = ? OR email = ?");
+        $stmt->execute([$username, $email]);
+
+        if ($stmt->rowCount() > 0) {
+            $error = "Nom d'utilisateur ou email déjà utilisé.";
+        } else {
+            // Insérer le client avec la photo
+            $stmt = $pdo->prepare("INSERT INTO client (username, email, password, prenom, nom, profile_photo) VALUES (?, ?, ?, ?, ?, ?)");
+            $stmt->execute([$username, $email, $password, $prenom, $nom, $profile_photo]);
+            $success = "Inscription réussie !";
+            echo '<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><meta http-equiv="refresh" content="3;url=connexion_client.php"><title>Inscription réussie</title><link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"></head><body><div class="container py-5"><div class="alert alert-success text-center" role="alert">'. $success .'<br>Vous allez être redirigé pour vous connecter...</div></div></body></html>';
+            exit;
+        }
     }
 }
+
 ?>
 
 
@@ -181,12 +205,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <!-- Navigation Bar -->
     <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
         <div class="container">
-            <a class="navbar-brand" href="index.php">
+            <a class="navbar-brand" href="http://localhost/avocat-client/wordpress/">
                 <i class="fas fa-balance-scale-left me-2"></i>JustisConnect
             </a>
             <div class="d-flex">
                 <a href="connexion_client.php" class="btn btn-outline-primary me-2">Connexion</a>
-                <a href="index.php" class="btn btn-primary">
+                <a href="http://localhost/avocat-client/wordpress/" class="btn btn-primary">
                     <i class="fas fa-home me-1"></i> Accueil
                 </a>
             </div>
@@ -221,7 +245,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                             </div>
                         <?php endif; ?>
                         
-                        <form method="POST" class="row g-3">
+                        <form method="POST" class="row g-3" enctype="multipart/form-data">
                             <div class="col-md-6">
                                 <label for="prenom" class="form-label">Prénom <span class="text-danger">*</span></label>
                                 <div class="input-group">
@@ -266,7 +290,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         
                             
                             <div class="col-12 mt-4">
-                                <button type="submit" class="btn btn-primary btn-lg w-100">
+
+                            <div class="col-12">
+    <label for="profile_photo" class="form-label">Photo de profil <span class="text-danger">*</span></label>
+    <input type="file" class="form-control" id="profile_photo" name="profile_photo" accept="image/*" required>
+</div>
+
+                                <button type="submit" class="btn btn-primary btn-lg w-100 mt-4">
                                     <i class="fas fa-user-plus me-2"></i> S'inscrire
                                 </button>
                             </div>
